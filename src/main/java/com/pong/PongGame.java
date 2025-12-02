@@ -14,6 +14,9 @@ public class PongGame extends JPanel implements MouseMotionListener {
     private int aiScore;
     private Ball ball;
     // step 1 add any other private variables you may need to play the game.
+    private Paddle playerPaddle;
+    private Speedup fast;
+    private SlowDown slow;
 
     public PongGame() {
 
@@ -29,7 +32,9 @@ public class PongGame extends JPanel implements MouseMotionListener {
         ball = new Ball(200, 200, 10, 3, Color.RED, 10);
 
         //create any other objects necessary to play the game.
-
+        playerPaddle = new Paddle(30, 240, 50, 9, Color.WHITE);
+        fast = new Speedup(100, 100, 50, 50);
+        slow = new SlowDown(150, 200, 50, 50);
     }
 
     // precondition: None
@@ -53,11 +58,15 @@ public class PongGame extends JPanel implements MouseMotionListener {
 
         g.setColor(Color.WHITE);
         g.drawString("The Score is User:" + playerScore + " vs Ai:" + aiScore, 240, 20);
-        ball.draw(g);
+        
         aiPaddle.draw(g);
         
         //call the "draw" function of any visual component you'd like to show up on the screen.
-
+        playerPaddle.draw(g);
+        fast.draw(g);
+        slow.draw(g);
+        
+        ball.draw(g);
     }
 
     // precondition: all required visual components are intialized to non-null
@@ -67,11 +76,22 @@ public class PongGame extends JPanel implements MouseMotionListener {
         //add commands here to make the game play propperly
         
         aiPaddle.moveY(ball.getY());
+        playerPaddle.moveY(userMouseY);
 
         if (aiPaddle.isTouching(ball)) {
            ball.reverseX();
         }
- 
+        if (playerPaddle.isTouching(ball)) {
+           ball.reverseX();
+        }
+        
+        ball.moveBall();
+
+        ball.bounceOffwalls(0, height-20);
+
+        if(fast.isTouching(ball)){
+
+        }
         pointScored();
 
     }
@@ -83,6 +103,16 @@ public class PongGame extends JPanel implements MouseMotionListener {
     // pixels) and the ai scores
     // if the ball goes off the left edge (0)
     public void pointScored() {
+            if(ball.getX() < 0){
+                aiScore = aiScore+1;
+                ball.setX(width/2);
+                ball.sety(height/2);
+            }
+            if(ball.getX() > width){
+                playerScore = playerScore+1;
+                ball.setX(width/2);
+                ball.sety(height/2);
+            }
 
     }
 
